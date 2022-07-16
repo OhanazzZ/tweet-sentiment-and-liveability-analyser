@@ -1,6 +1,7 @@
 # Tweet Sentiment and Liveability Analyser
+A full-stack, distributed, fully-containerised web application with scripted deployment of the entire system
 
-A cloud-native application that collects tweet in real-time and analyses tweet sentiment in conjunction with data from AURIN (Australian Urban Research Infrastructure Network) to investigate different aspects of liveability in Victoria
+The application collects tweet in real-time and analyses tweet sentiment in conjunction with data from AURIN (Australian Urban Research Infrastructure Network) to investigate different aspects of liveability in Victoria
 
 ## Tech Stack
 ![tech stack](/imgs/tech-stack.png)
