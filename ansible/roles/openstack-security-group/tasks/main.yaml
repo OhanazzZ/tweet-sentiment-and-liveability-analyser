@@ -1,0 +1,45 @@
+---
+###################################################
+#  University of Melbourne                        #
+#  COMP90024 Cluster and Cloud Computing          #
+#  2022 Semester 1 - Assignment 2                 #
+#                                                 #
+#  Team 58:                                       #
+#  - (Sam)     Bin Zhang     895427  @ Melbourne  #
+#  - (Joe)     Tianhuan Lu   894310  @ Melbourne  #
+#  - (Leo)     Yicong Li    1307323  @ Melbourne  #
+#  - (Peter)   Weiran Zou   1309198  @ Melbourne  #
+#  - (Thomas)  Chenhao Gu   1147534  @ Melbourne  #
+###################################################
+
+- name: Create security groups
+  openstack.cloud.security_group:
+    name: '{{ item.name }}'
+    description: '{{ item.description }}'
+    state: present
+  loop: '{{ security_groups }}'
+
+- name: Create a list of security group names
+  ansible.builtin.set_fact:
+    sg_names: '{{ sg_names|default([]) + [ item.name ] }}'
+  loop: '{{ security_groups }}'
+
+- name: Create security group rules for public
+  os_security_group_rule:
+    security_group: '{{ item.name }}'
+    protocol: '{{ item.protocol }}'
+    port_range_min: '{{ item.port_range_min }}'
+    port_range_max: '{{ item.port_range_max }}'
+    remote_ip_prefix: '{{ item.remote_ip_prefix }}'
+    state: present
+  loop: '{{ security_group_rules_public }}'
+
+- name: Create security group rules for CouchDB
+  os_security_group_rule:
+    security_group: '{{ item.name }}'
+    protocol: '{{ item.protocol }}'
+    port_range_min: '{{ item.port_range_min }}'
+    port_range_max: '{{ item.port_range_max }}'
+    remote_group: '{{ item.remote_group }}'
+    state: present
+  loop: '{{ security_group_rules_private }}'

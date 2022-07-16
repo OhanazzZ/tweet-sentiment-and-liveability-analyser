@@ -1,0 +1,31 @@
+---
+###################################################
+#  University of Melbourne                        #
+#  COMP90024 Cluster and Cloud Computing          #
+#  2022 Semester 1 - Assignment 2                 #
+#                                                 #
+#  Team 58:                                       #
+#  - (Sam)     Bin Zhang     895427  @ Melbourne  #
+#  - (Joe)     Tianhuan Lu   894310  @ Melbourne  #
+#  - (Leo)     Yicong Li    1307323  @ Melbourne  #
+#  - (Peter)   Weiran Zou   1309198  @ Melbourne  #
+#  - (Thomas)  Chenhao Gu   1147534  @ Melbourne  #
+###################################################
+
+# Create CouchDB container
+- hosts: couchdb_coordinator, couchdb_node
+  vars_files:
+    - host_vars/mrc.yaml
+    - host_vars/couchdb.yaml
+  roles:
+    - role: couchdb-setup
+
+# Set up CouchDB cluster
+- hosts: couchdb_node
+  vars_files:
+    - host_vars/mrc.yaml
+    - host_vars/couchdb.yaml
+  vars:
+    coordinator: "{{ groups['couchdb_coordinator'][0] }}"
+  roles:
+    - role: couchdb-cluster

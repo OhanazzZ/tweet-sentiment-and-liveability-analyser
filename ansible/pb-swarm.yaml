@@ -1,0 +1,56 @@
+---
+###################################################
+#  University of Melbourne                        #
+#  COMP90024 Cluster and Cloud Computing          #
+#  2022 Semester 1 - Assignment 2                 #
+#                                                 #
+#  Team 58:                                       #
+#  - (Sam)     Bin Zhang     895427  @ Melbourne  #
+#  - (Joe)     Tianhuan Lu   894310  @ Melbourne  #
+#  - (Leo)     Yicong Li    1307323  @ Melbourne  #
+#  - (Peter)   Weiran Zou   1309198  @ Melbourne  #
+#  - (Thomas)  Chenhao Gu   1147534  @ Melbourne  #
+###################################################
+
+# Initialise Docker Swarm
+- hosts: swarm_leader
+  become: true
+  vars_files:
+    - host_vars/mrc.yaml
+  tasks:
+    - name: init swarm
+      community.docker.docker_swarm:
+        state: present
+      register: swarm_info
+    - name: retrieve swarm tokens
+      ansible.builtin.set_fact:
+        manager_token: "{{ swarm_info.swarm_facts.JoinTokens.Manager }}"
+        worker_token: "{{ swarm_info.swarm_facts.JoinTokens.Worker }}"
+
+# Add managers to Docker Swarm
+- hosts: swarm_manager
+  become: true
+  vars_files:
+    - host_vars/mrc.yaml
+  vars:
+    leader_IP: "{{ groups['swarm_leader'][0] }}"
+  tasks:
+    - name: add managers to swarm
+      community.docker.docker_swarm:
+        state: join
+        join_token: "{{ hostvars[ leader_IP ]['manager_token'] }}"
+        remote_addrs: "{{ leader_IP }}:2377"
+
+# Add workers to Docker Swarm
+- hosts: swarm_worker
+  become: true
+  vars_files:
+    - host_vars/mrc.yaml
+  vars:
+    leader_IP: "{{ groups['swarm_leader'][0] }}"
+  tasks:
+    - name: add workers to swarm
+      community.docker.docker_swarm:
+        state: join
+        join_token: "{{ hostvars[ leader_IP ]['worker_token'] }}"
+        remote_addrs: "{{ leader_IP }}:2377"
