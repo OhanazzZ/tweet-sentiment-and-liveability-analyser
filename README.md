@@ -1,4 +1,4 @@
-# Tweet Sentiment Analyser and Liveability
+# Tweet Sentiment and Liveability Analyser
 
 A cloud-native application that collects tweet in real-time and analyses tweet sentiment in conjunction with data from AURIN (Australian Urban Research Infrastructure Network) to investigate different aspects of liveability in Victoria
 
